@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NutriTrack — Daily Calorie Tracker</title>
+
+  <!-- Google font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --muted:#9aa7bd;
+      --accent1: #7c3aed; /* violet */
+      --accent2: #06b6d4; /* cyan */
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.04);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent 8%),
+        radial-gradient(1000px 500px at 95% 90%, rgba(6,182,212,0.08), transparent 8%),
+        linear-gradient(180deg, #081024 0%, #071020 30%, #04121a 100%);
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:36px;
+    }
+
+    /* Container */
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    /* NAV */
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:28px;
+    }
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:10px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;color:white;box-shadow:0 6px 18px rgba(7,12,20,0.6);
+    }
+    .brand h1{font-size:18px;margin:0;letter-spacing:-0.2px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    .nav-right{display:flex;gap:10px;align-items:center}
+    .btn{
+      padding:10px 14px;border-radius:10px;border:0;font-weight:600;
+      cursor:pointer;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);
+      color:var(--muted);
+      transition:all .18s ease;
+    }
+    .btn:hover{transform:translateY(-3px)}
+    .btn-primary{
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:white;box-shadow:0 8px 30px rgba(7,12,20,0.5);
+    }
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+
+    /* Hero */
+    .hero{
+      display:grid;
+      grid-template-columns: 1fr 420px;
+      gap:28px;
+      align-items:center;
+      margin-bottom:36px;
+    }
+    @media (max-width:930px){ .hero{grid-template-columns:1fr; padding-bottom:18px} }
+
+    .card{
+      background: linear-gradient(180deg,var(--glass), var(--glass-2));
+      border-radius:16px;
+      padding:26px;
+      box-shadow: 0 6px 30px rgba(2,6,12,0.6);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .hero-left h2{font-size:28px;margin:0 0 10px}
+    .hero-left p{color:var(--muted);margin:0 0 18px}
+    .kpis{display:flex;gap:12px;margin-top:12px}
+    .kpi{padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02),transparent);flex:1}
+    .kpi .num{font-weight:700;font-size:20px}
+    .kpi .label{font-size:12px;color:var(--muted)}
+
+    /* Card preview (right) */
+    .preview{
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .mock{
+      background:linear-gradient(180deg,#07122a, rgba(255,255,255,0.02));
+      padding:18px;border-radius:14px;display:flex;flex-direction:column;gap:14px;
+    }
+    .progress-full{height:14px;background:rgba(255,255,255,0.03);border-radius:10px;overflow:hidden}
+    .progress-fill{height:100%;width:48%;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:10px}
+
+    /* Features */
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:28px 0}
+    @media (max-width:920px){ .features{grid-template-columns:repeat(1,1fr)} }
+    .feature{padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);display:flex;gap:12px;align-items:flex-start}
+    .feature .icon{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent1));display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+
+    /* CTA strip */
+    .cta{
+      margin-top:18px;padding:18px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(90deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04));
+    }
+    @media (max-width:740px){ .cta{flex-direction:column;align-items:stretch} }
+
+    /* Footer */
+    footer{margin-top:38px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* Form modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,0.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:60}
+    .modal{width:100%;max-width:520px;background:linear-gradient(180deg,#071022, rgba(255,255,255,0.02));padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
+    .form-row{display:flex;gap:10px}
+    .form-row .col{flex:1}
+    input,select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+
+    /* small */
+    .small{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted)}
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600}
+    .screenshot{width:100%;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.03)}
+    .screen-img{display:block;width:100%;height:220px;object-fit:cover;background:linear-gradient(180deg,#051128, #071a2b)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="nav">
+      <div class="brand">
+        <div class="logo">N</div>
+        <div>
+          <h1>NutriTrack</h1>
+          <p>Daily calorie tracker • Simple • Friendly</p>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <button class="btn btn-ghost" onclick="openModal()">Sign up</button>
+        <button class="btn btn-primary" onclick="scrollToSection('features')">Explore</button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-left card">
+        <h2>Track calories easily. Build healthy habits.</h2>
+        <p class="small muted">NutriTrack helps you log meals, watch daily intake, and reach your goals — fast. Designed for students and busy people who want simple tracking without complex apps.</p>
+
+        <div class="kpis" style="margin-top:18px">
+          <div class="kpi">
+            <div class="num">2000 kcal</div>
+            <div class="label small muted">Typical goal</div>
+          </div>
+          <div class="kpi">
+            <div class="num">+150 foods</div>
+            <div class="label small muted">Preloaded database</div>
+          </div>
+          <div class="kpi">
+            <div class="num">Quick add</div>
+            <div class="label small muted">1-click logging</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:12px">
+          <button class="btn btn-primary" onclick="openModal()">Get Started — Free</button>
+          <button class="btn" onclick="scrollToSection('how')">How it works</button>
+        </div>
+
+        <div class="cta" style="margin-top:18px">
+          <div>
+            <div class="pill">For Hostels • Students • Everyone</div>
+            <div class="small muted" style="margin-top:8px">Lightweight, privacy-friendly — data stored locally (or on your server if you connect it).</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small muted">Available as</div>
+            <div style="margin-top:6px"><span class="pill">Web</span> <span class="pill">Flask-ready</span></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="preview">
+        <div class="card mock">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div class="small muted">Today</div>
+              <div style="font-weight:700;font-size:18px">Consumed <span style="color:#fff">1124 kcal</span></div>
+            </div>
+            <div class="pill">48% of goal</div>
+          </div>
+
+          <div class="progress-full" aria-hidden="true">
+            <div class="progress-fill"></div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="flex:1">
+              <div class="small muted">Next quick add</div>
+              <div style="font-weight:700">Roti × 2 (150 kcal)</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal()">Add</button>
+          </div>
+        </div>
+
+        <div class="card screenshot">
+          <img alt="App screenshot" class="screen-img" src="data:image/svg+xml;utf8,
+            <svg xmlns='http://www.w3.org/2000/svg' width='800' height='350'>
+              <defs><linearGradient id='g' x1='0' x2='1'><stop stop-color='%23071a2b' offset='0'/><stop stop-color='%23051a2b' offset='1'/></linearGradient></defs>
+              <rect width='100%' height='100%' fill='url(%23g)'/>
+              <text x='50%' y='45%' fill='%23a8c2d9' font-family='Inter' font-size='22' text-anchor='middle'>NutriTrack Preview</text>
+              <text x='50%' y='65%' fill='%239fb7cf' font-family='Inter' font-size='14' text-anchor='middle'>Log meals • See progress • Export</text>
+            </svg>" />
+        </div>
+      </aside>
+    </section>
+
+    <section id="features" class="features">
+      <div class="feature card">
+        <div class="icon">⚡</div>
+        <div>
+          <div style="font-weight:700">Quick logging</div>
+          <div class="small muted">Pick food, set quantity and done — no long forms.</div>
+        </div>
+      </div>
+
+      <div class="feature card">
+        <div class="icon">📊</div>
+        <div>
+          <div style="font-weight:700">Daily & weekly reports</div>
+          <div class="small muted">Simple charts to compare intake over time.</div>
+        </div>
+      </div>
+
+      <div class="feature card">
+        <div class="icon">🔒</div>
+        <div>
+          <div style="font-weight:700">Privacy first</div>
+          <div class="small muted">Data stored locally or on your DB — you choose.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how" style="margin-top:18px">
+      <div class="card">
+        <h3 style="margin:0">How NutriTrack works</h3>
+        <p class="small muted" style="margin-top:8px">A simple workflow so anyone can start tracking in minutes.</p>
+
+        <ol style="margin-top:14px;color:var(--muted);line-height:1.8">
+          <li><strong>Sign up</strong> — create an account (or try demo).</li>
+          <li><strong>Set your calorie goal</strong> — default is 2000 kcal.</li>
+          <li><strong>Log meals</strong> — choose from a preloaded list or add custom foods.</li>
+          <li><strong>Review</strong> — daily summary and weekly graphs help you adjust.</li>
+        </ol>
+
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button class="btn btn-primary" onclick="openModal()">Create free account</button>
+          <button class="btn" onclick="downloadDemo()">Download demo CSV</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top:22px">
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h3 style="margin:0">Integrate with your Flask app</h3>
+        <p class="small muted">This UI works great as a static landing page. If you're using the NutriTrack Flask backend I gave you earlier, you can copy the elements into `templates/base.html` and `templates/dashboard.html` to make the app look like this.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <div class="pill">Flask-ready</div>
+          <div class="pill">Bootstrap-free</div>
+          <div class="pill">Responsive</div>
+          <div class="pill">Lightweight</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="small muted">Made with care • NutriTrack • © <span id="year"></span></div>
+    </footer>
+  </div>
+
+  <!-- Modal: Sign up -->
+  <div id="modal" class="modal-backdrop" onclick="closeModal(event)">
+    <div class="modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+      <h3>Create your account</h3>
+      <p class="small muted">Start tracking in seconds — no credit card required.</p>
+
+      <form id="signupForm" style="margin-top:12px" onsubmit="submitForm(event)">
+        <div class="form-row" style="margin-bottom:10px">
+          <div class="col">
+            <label>Username</label>
+            <input id="username" required />
+          </div>
+          <div class="col">
+            <label>Daily goal (kcal)</label>
+            <input id="goal" type="number" value="2000" required />
+          </div>
+        </div>
+
+        <div style="margin-bottom:10px">
+          <label>Password</label>
+          <input id="password" type="password" required />
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary" type="submit">Create account</button>
+          <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+        </div>
+        <p id="formMsg" class="small muted" style="margin-top:10px"></p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // small helpers
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    function openModal(){
+      document.getElementById('modal').style.display = 'flex';
+      document.getElementById('username').focus();
+    }
+    function closeModal(e){
+      document.getElementById('modal').style.display = 'none';
+      document.getElementById('formMsg').textContent = '';
+    }
+    function closeModalEventOnly(e){
+      // reserved
+    }
+    function scrollToSection(id){
+      const el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    // Simulate signup (for static demo). If using Flask, POST these to /register
+    function submitForm(e){
+      e.preventDefault();
+      const user = document.getElementById('username').value.trim();
+      const goal = document.getElementById('goal').value;
+      const passw = document.getElementById('password').value;
+      if(!user || !passw){ document.getElementById('formMsg').textContent = 'Please fill all fields'; return; }
+      // fake success
+      document.getElementById('formMsg').textContent = 'Account created — demo only. Use the Flask backend to persist accounts.';
+      setTimeout(()=>{ closeModal(); alert('Demo account created: ' + user + ' (not stored)'); }, 1000);
+    }
+
+    // download demo CSV
+    function downloadDemo(){
+      const csv = `name,unit,calories_per_unit
+Roti (medium),piece,75
+Rice (cooked),cup,200
+Dal (1 cup),cup,180
+Milk (whole, 1 cup),cup,150
+Banana (medium),piece,105
+Apple (medium),piece,95
+Paneer (100g),100g,265
+Vegetable sabji (1 cup),cup,120
+Egg (boiled),piece,78
+Bread (slice),slice,70`;
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'food_data_demo.csv'; a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
